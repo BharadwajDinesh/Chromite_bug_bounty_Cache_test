@@ -43,5 +43,5 @@ This repository can be initialised as a submodule in chromite_uatg_tests.
 - Load some data using numerous store operations to fill up the cache.
 
 ## Contributors
-Pruthvi Raj S <<bharathd7900@gmail.com>>
+Pruthvi Raj S <<bharathd7900@gmail.com>>,
 Bharadwaj D <<pruthvirajs@pesu.pes.edu>>
