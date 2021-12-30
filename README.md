@@ -45,3 +45,5 @@ This repository can be initialised as a submodule in chromite_uatg_tests.
 ## Contributors
 Pruthvi Raj S <<bharathd7900@gmail.com>>,
 Bharadwaj D <<pruthvirajs@pesu.pes.edu>>
+
+## Attribution: Ayush Mukherjee <<ayushrex007@gmail.com>>, Tejas Raj G R <<tejasraj40@gmail.com>>
