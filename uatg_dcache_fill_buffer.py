@@ -40,7 +40,7 @@ class uatg_cache_dcache_fill_buffer(IPlugin):
         asm='\n\tfence\n\tla t1, rvtest_data\t\n'
         
         for i in range(self._cache_size):
-	        asm+=f'\n\tlw t0, 0(t1)\n\tli a1, {self._sets*self._block_size*self._word_size}\n\taddi t1, t1, a1\n'
+	        asm+=f'\n\tlw t0, 0(t1)\n\tli a1, {self._sets*self._block_size*self._word_size}\n\tadd t1, t1, a1\n'
         
         for i in range(self._fb_size*2):
             asm+='\n\tnop\n'
