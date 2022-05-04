@@ -6,65 +6,72 @@ import re
 import os
 import random	
 
-class uatg_cache_dcache_fill_buffer(IPlugin):
-    
+class uatg_cache_fillbuffer_01(IPlugin):
+    """
+    The test is used to fill the fill buffer. 
+    It uses consecutive load operations to do so.
+    """
+
     def __init__(self):
+
         super().__init__()
 
     def execute(self, core_yaml, isa_yaml):
-        _dcache_dict = core_yaml['dcache_config']
+ 
+        _dcache_dict = core_yaml['dcache_configuration']
         _dcache_en = _dcache_dict['instantiate']
         self._sets = _dcache_dict['sets']
         self._word_size = _dcache_dict['word_size']
         self._block_size = _dcache_dict['block_size']
         self._ways = _dcache_dict['ways']
-        self._cache_size=_dcache_dict['cache_size']
+        self._cache_size=self._sets*self._ways*self._block_size
         self._fb_size=_dcache_dict['fb_size']
         return True
-    
-    def check_log(self, log_file_path, reports_dir):
-        return None
-    
-    def generate_covergroups(self, config_file):
-        ''
 
     def generate_asm(self) -> List[Dict[str, str]]:
-        
-        test_dict=[]
-        
-        asm_data = '\nriscvtest_data:\n'
+        """
+        This method returns a string of the ASM file to be generated.
+
+        This ASM file is written as the ASM file which will be run on the DUT.
+        """
+        asm_data = '\nrvtest_data:\n'
 
         for i in range (self._cache_size*4):
-        	asm_data+=f"\t.word 0x{str(hex(random.randrange(16**8))[2:]).zfill(8)}\n"
+        	val=str(hex(int(random.uniform(0,self._cache_size*4)))[2:].zfill(8))
+        	asm_data+=f"\t.word 0x{val}\n"
 
-        asm='\n\tfence\n\tla t1, rvtest_data\t\n'
+
+        asm='init:\n\tfence\n\tla t1, rvtest_data\t\n'
         
+        #fills the cache	
+        asm+='fillc:'
         for i in range(self._cache_size):
-	        asm+=f'\n\tlw t0, 0(t1)\n\tli a1, {self._sets*self._block_size*self._word_size}\n\tadd t1, t1, a1\n'
+	        asm+=f'\n\tlw t0, 0(t1)\n\taddi t1, t1, {self._sets*self._block_size*self._word_size}\n'
         
-        for i in range(self._fb_size*2):
+        asm+='clearfb:'
+        for i in range(70):
             asm+='\n\tnop\n'
 
-        for i in range(self._fb_size*2):
-            offset=32*(i+1)
-            asm+=f'\n\tlw t0, {offset}(t1)\n'
+        asm+='fillfb:'
+        for i in range(self._fb_size+10):
+            asm+=f'\n\taddi t1, t1, 32\n\tlw t0, 0(t1)\n'
+
 
         asm+='end:\n\tnop\n'
-        
-        # compile macros for the test
-        compile_macros=[]
-        
-        # return asm_code and sig_code
-        test_dict.append({
+
+
+        return [{
             'asm_code': asm,
             'asm_data': asm_data,
             'asm_sig': '',
-            'compile_macros': compile_macros
-        })
+            'compile_macros': []
+        }]
+
+    def check_log(self, log_file_path, reports_dir):
+        return None
+
+    def generate_covergroups(self, config_file):
+        return ''
+
+
         
-        return test_dict
-
-    
-    
-
-
