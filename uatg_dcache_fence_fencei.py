@@ -35,15 +35,16 @@ class uatg_cache_dcache_fill_buffer(IPlugin):
         for i in range (self._cache_size*4):
         	asm_data+=f"\t.word 0x{str(hex(random.randrange(16**8))[2:]).zfill(8)}\n"
             
-        asm='\n\tfence\n'
-        asm+='\n\tla t1,rvtest_data\t\n'
+        asm='\n\tfence\n'                   	#clears the cache	
+        asm+='\n\tla t1,rvtest_data\t\n'	#loads the address of the rvtest_data into t1 register
         
+	#fills the cache
         for i in range(self._cache_size):
 	        asm+=f'\n\tlw t0, 0(t1)\n\tli a1, {self._sets*self._block_size*self._word_size}\n\taddi t1, t1, a1\n'
         
         asm+='end:\t\n\tnop\n'
         
-        asm+='\n\tfence.i\n'
+        asm+='\n\tfence.i\n' #clears the instruction cache
 
         # compile macros for the test
         compile_macros=[]
