@@ -37,11 +37,11 @@ class uatg_cache_fillbuffer_01(IPlugin):
         asm_data = '\nrvtest_data:\n'
 
         for i in range (self._cache_size*4):
-        	val=str(hex(int(random.uniform(0,self._cache_size*4)))[2:].zfill(8))
-        	asm_data+=f"\t.word 0x{val}\n"
+        	val=str(hex(int(random.uniform(0,self._cache_size*4)))[2:].zfill(8))    #for generating a random hex value
+        	asm_data+=f"\t.word 0x{val}\n" 						#for naturally aligned 4-bytes or 32-bit comma separated words
 
-
-        asm='init:\n\tfence\n\tla t1, rvtest_data\t\n'
+	#clear the cache using fence
+        asm='init:\n\tfence\n\tla t1, rvtest_data\t\n'  #load the address of rvtest_data into the t1 register
         
         #fills the cache	
         asm+='fillc:'
@@ -50,7 +50,7 @@ class uatg_cache_fillbuffer_01(IPlugin):
         
         asm+='clearfb:'
         for i in range(70):
-            asm+='\n\tnop\n'
+            asm+='\n\tnop\n'  #A series of 70 nops is done to clear the fill buffer.
 
         asm+='fillfb:'
         for i in range(self._fb_size+10):
